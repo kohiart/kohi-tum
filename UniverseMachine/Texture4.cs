@@ -127,17 +127,19 @@ public static class Texture4
 
     public class Data
     {
-        public List<Ellipse> Circles;
-        public List<Stroke> Lines;
+        public List<Ellipse> Circles = null!;
+        public List<Stroke> Lines = null!;
 
-        public CustomPath Poly1;
+        public CustomPath Poly1 = null!;
         public Color Poly1Color;
 
-        public CustomPath Poly2;
+        public CustomPath Poly2 = null!;
         public Color Poly2Color;
-        public Stroke PolyStroke1;
+
+        public Stroke PolyStroke1 = null!;
         public Color PolyStroke1Color;
-        public Stroke PolyStroke2;
+
+        public Stroke PolyStroke2 = null!;
         public Color PolyStroke2Color;
     }
 }

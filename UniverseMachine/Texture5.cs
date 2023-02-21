@@ -49,8 +49,8 @@ public static class Texture5
 
     public class Data
     {
-        public Ellipse Circle1;
-        public Ellipse Circle2;
+        public Ellipse Circle1 = null!;
+        public Ellipse Circle2 = null!;
         public uint Color1;
         public uint Color2;
     }

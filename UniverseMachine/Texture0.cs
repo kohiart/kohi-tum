@@ -65,12 +65,12 @@ public static class Texture0
 
     public class Data
     {
-        public Ellipse Circle1;
-        public Ellipse Circle2;
+        public Ellipse Circle1 = null!;
+        public Ellipse Circle2 = null!;
         public Color CircleColor1;
         public Color CircleColor2;
-        public Stroke Stroke1;
-        public Stroke Stroke2;
+        public Stroke Stroke1 = null!;
+        public Stroke Stroke2 = null!;
         public Color StrokeColor1;
         public Color StrokeColor2;
     }

@@ -15,7 +15,6 @@ public sealed class Parameters
     public const int NumRows = 7;
     public const int NumColors = 750;
     public const int BaseSize = 2222;
-    public const long BaseSizeF = 9543417331712 /* 2222 */;
 
     private readonly List<uint[]> _clrs;
 
@@ -79,9 +78,9 @@ public sealed class Parameters
         new[] {6, 5, 2, 2}
     };
 
-    private readonly int _numTextures = 6;
+    private const int NumTextures = 6;
 
-    private uint[] _whichClr;
+    private uint[] _whichClr = null!;
 
     public int PathSegments = 2000;
 
@@ -132,17 +131,17 @@ public sealed class Parameters
     public int EndIdx { get; set; }
     public int CLen { get; set; }
 
-    public List<byte> MyColorsR { get; set; }
-    public List<byte> MyColorsG { get; set; }
-    public List<byte> MyColorsB { get; set; }
+    public List<byte> MyColorsR { get; set; } = null!;
+    public List<byte> MyColorsG { get; set; } = null!;
+    public List<byte> MyColorsB { get; set; } = null!;
     public List<int> WhichTex { get; set; }
     public List<int> WhichColorFlow { get; set; }
     public List<int> WhichRot { get; set; }
     public List<int> WhichRotDir { get; set; }
-    public List<Vector2> GridPoints { get; set; }
-    public Bezier[] Paths { get; set; }
+    public List<Vector2> GridPoints { get; set; } = null!;
+    public Bezier[] Paths { get; set; } = null!;
     public int NumPaths { get; set; }
-    public List<Star> StarPositions { get; set; }
+    public List<Star> StarPositions { get; set; } = null!;
 
     private Universe BuildUniverse(XorShift prng)
     {
@@ -193,7 +192,7 @@ public sealed class Parameters
                     WhichTex.Add(4);
                     break;
                 case 5:
-                    WhichTex.Add(prng.NextInt(0, (_numTextures - 2) * Fix64.One));
+                    WhichTex.Add(prng.NextInt(0, (NumTextures - 2) * Fix64.One));
                     break;
             }
 

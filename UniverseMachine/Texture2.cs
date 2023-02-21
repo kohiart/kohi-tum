@@ -73,7 +73,7 @@ public static class Texture2
 
     public class Data
     {
-        public List<Color> Colors;
-        public List<Stroke> Strokes;
+        public List<Color> Colors = null!;
+        public List<Stroke> Strokes = null!;
     }
 }

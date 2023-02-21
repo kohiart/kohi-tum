@@ -73,7 +73,7 @@ public static class Texture1
         public Color Color1;
         public Color Color2;
         public Color Color3;
-        public CustomPath Rect1;
-        public CustomPath Rect2;
+        public CustomPath Rect1 = null!;
+        public CustomPath Rect2 = null!;
     }
 }

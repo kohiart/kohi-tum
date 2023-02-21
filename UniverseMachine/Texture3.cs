@@ -61,10 +61,10 @@ public static class Texture3
 
     public class Data
     {
-        public Ellipse Circle1;
-        public Ellipse Circle2;
-        public Ellipse Circle3;
-        public Ellipse Circle4;
+        public Ellipse Circle1 = null!;
+        public Ellipse Circle2 = null!;
+        public Ellipse Circle3 = null!;
+        public Ellipse Circle4 = null!;
         public Color Color1;
         public Color Color2;
         public Color Color3;
