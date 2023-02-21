@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+  mochi:
+    build: .
+    image: kohi/mochi
+    restart: unless-stopped
+    ports:
+      - "30303:30303"
+      - "30303:30303/udp"
+      - "8545:8545"
+      - "8546:8546"
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command:
+      - --ipcdisable            
+      - --rpc
+      - --rpcapi
+      - "eth,net,web3"
+      - --rpcaddr=0.0.0.0
+      - --rpcvhosts=*
+      - --rpccorsdomain=*
+      - --ws
+      - --wsorigins=*
+      - --wsaddr=0.0.0.0
+      - --wsapi
+      - "eth,net,web3"
+      - --graphql
+      - --graphql.corsdomain=*
+      - --graphql.vhosts=*
+      - --datadir
+      - "/chaindata"
+      - --vm.evm=./build/lib/libevmone.so
+      - --mine
+      - --miner.threads=1
+      - --miner.gastarget
+      - "0x800000000000"
+      - --verbosity
+      - "4"      
+      - --nousb
+      # Minimum number of executable transaction slots guaranteed per account (default: 16)
+      # - --txpool.accountslots=16
+      # Maximum number of non-executable transaction slots for all accounts (default: 1024)
+      # --txpool.globalqueue=1024
+      # Maximum number of executable transaction slots for all accounts (default: 4096)
+      # - --txpool.globalslots=10000
+      # Maximum amount of time non-executable transaction are queued (default: 3h0m0s)
+      # - --txpool.lifetime=3h0m0s
+      # Megabytes of memory allocated to internal caching (default: 1024)
+      # - --cache=4096
+      # Maximum number of network peers (network disabled if set to 0) (default: 25)
+      - --maxpeers=0
+      # Blockchain sync mode ("fast", "full", or "light")
+      - --syncmode=full
+      # Blockchain garbage collection mode ("full", "archive") (default: "full")
+      # - --gcmode=full      
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"

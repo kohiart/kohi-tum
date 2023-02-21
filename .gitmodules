@@ -1,0 +1,3 @@
+[submodule "lib/kohi-composer"]
+	path = lib/kohi-composer
+	url = https://github.com/kohiart/kohi-composer
