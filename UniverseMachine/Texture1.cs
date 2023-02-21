@@ -67,14 +67,7 @@ public static class Texture1
 
         return matrix;
     }
-    /*
-        .st1{fill:#000000; fill-opacity:0.025; stroke:none;}
-        <rect x="310" y="310" class="st1" width="400" height="400"/>
-
-        .st0{fill:#FFFFFF; fill-opacity:1.0; stroke:#000000; stroke-width:0.0; stroke-opacity:0.0; stroke-linecap:round; stroke-linejoin:round; stroke-miterlimit:10;
-        <rect x="300" y="300" class="st0" width="400" height="400"/>
-     */
-
+    
     public class Data
     {
         public Color Color1;

@@ -70,15 +70,6 @@ public static class Texture2
             Graphics2D.RenderWithTransform(g, Stroke.Vertices(stroke).ToList(), tinted, matrix);
         }
     }
-    /*
-        var texture2 = so + `.st0{fill:url(#SVGID_1_);}
-        ` + sc + `
-        <linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="500" y1="500" x2="750" y2="750">
-        <stop  offset="0" style="stop-color:#FFFFFF; stop-opacity:1.0"/>
-        <stop  offset="1" style="stop-color:#FFFFFF; stop-opacity:0.0"/>
-        </linearGradient>
-        <polygon class="st0" points="500,1000 500,500 1000,500 "/>`;
-    */
 
     public class Data
     {

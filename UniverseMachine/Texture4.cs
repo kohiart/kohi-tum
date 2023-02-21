@@ -64,30 +64,28 @@ public static class Texture4
         data.Lines.Add(stroke1);
         data.Lines.Add(stroke2);
 
-        data.Circles = new List<Ellipse>();
-        data.Circles.Add(new Ellipse(4335486107648, 5130699145216, 22883586048, 22883586048));
-        data.Circles.Add(new Ellipse(4801739358208, 5074443567104, 22883586048, 22883586048));
-        data.Circles.Add(new Ellipse(5267992346624, 5019141668864, 22883586048, 22883586048));
-        data.Circles.Add(new Ellipse(5734245335040, 4962886090752, 22883586048, 22883586048));
-        data.Circles.Add(new Ellipse(6200498323456, 4906631036928, 22883586048, 22883586048));
-        data.Circles.Add(new Ellipse(6666751311872, 4851328614400, 22883586048, 22883586048));
-        data.Circles.Add(new Ellipse(7133004300288, 4795073036288, 22883586048, 22883586048));
-        data.Circles.Add(new Ellipse(7599257288704, 4739771138048, 22883586048, 22883586048));
-        data.Circles.Add(new Ellipse(8065510801408, 4683515559936, 22883586048, 22883586048));
-        data.Circles.Add(new Ellipse(8531763789824, 4628213661696, 22883586048, 22883586048));
-        data.Circles.Add(new Ellipse(4569089703936, 4348843655168, 31464931328, 31464931328));
-        data.Circles.Add(new Ellipse(5966894989312, 4181030076416, 31464931328, 31464931328));
-        data.Circles.Add(new Ellipse(4335486107648, 3678545117184, 39092793344, 39092793344));
-        data.Circles.Add(new Ellipse(4102836191232, 2952944680960, 46720655360, 39092793344));
+        data.Circles = new List<Ellipse>
+        {
+            new(4335486107648, 5130699145216, 22883586048, 22883586048),
+            new(4801739358208, 5074443567104, 22883586048, 22883586048),
+            new(5267992346624, 5019141668864, 22883586048, 22883586048),
+            new(5734245335040, 4962886090752, 22883586048, 22883586048),
+            new(6200498323456, 4906631036928, 22883586048, 22883586048),
+            new(6666751311872, 4851328614400, 22883586048, 22883586048),
+            new(7133004300288, 4795073036288, 22883586048, 22883586048),
+            new(7599257288704, 4739771138048, 22883586048, 22883586048),
+            new(8065510801408, 4683515559936, 22883586048, 22883586048),
+            new(8531763789824, 4628213661696, 22883586048, 22883586048),
+            new(4569089703936, 4348843655168, 31464931328, 31464931328),
+            new(5966894989312, 4181030076416, 31464931328, 31464931328),
+            new(4335486107648, 3678545117184, 39092793344, 39092793344),
+            new(4102836191232, 2952944680960, 46720655360, 39092793344)
+        };
 
         var poly1Color = Color.FromArgb((byte) (255 * 0.75f), Color.White.R, Color.White.G, Color.White.B);
         var strokeColor = Color.FromArgb(255, Color.Black.R, Color.Black.G, Color.Black.B);
         var poly2Color = Color.FromArgb((byte) (255 * 0.50f), Color.White.R, Color.White.G, Color.White.B);
-
-        //var p1c = poly1Color.ToUInt32();
-        //var sc = strokeColor.ToUInt32();
-        //var p2c = poly2Color.ToUInt32();
-
+        
         data.Poly1Color = poly1Color;
         data.PolyStroke1Color = strokeColor;
         data.Poly2Color = poly2Color;
@@ -126,33 +124,6 @@ public static class Texture4
             Graphics2D.RenderWithTransform(g, circle.Vertices().ToList(), tinted, matrix);
         }
     }
-    /*
-        .st0{ stroke:#000000; stroke-width:0.5; stroke-linecap:round; stroke-linejoin:round; stroke-miterlimit:10; stroke-opacity:0.1; fill:#FFFFFF; fill-opacity:0.75; }
-        .st1{ stroke:#000000; stroke-width:0.5; stroke-linecap:round; stroke-linejoin:round; stroke-miterlimit:10; stroke-opacity:0.1; fill:#FFFFFF; fill-opacity:0.5;  }
-        .st2{ stroke:#000000; stroke-width:0.25; stroke-linecap:round; stroke-linejoin:round; stroke-miterlimit:10; stroke-opacity:0.5; fill:none;}
-        .st3{ fill:#FFFFFF; }
-
-        <polygon class="st0" points="799.2,562.6 584.2,673.4 830.2,664.8 "/>
-        <polygon class="st1" points="937.7,545.9 799.2,562.6 830.2,664.8 "/>
-
-        <line class="st2" x1="0" y1="600.6" x2="584.2" y2="673.4"/>
-        <line class="st2" x1="1000" y1="507.1" x2="937.7" y2="545.9"/>
-
-        <circle class="st3" cx="454.7" cy="462.8" r="2.4"/>
-        <circle class="st3" cx="503.6" cy="468.7" r="2.4"/>
-        <circle class="st3" cx="552.5" cy="474.5" r="2.4"/>
-        <circle class="st3" cx="601.4" cy="480.4" r="2.4"/>
-        <circle class="st3" cx="650.3" cy="486.3" r="2.4"/>
-        <circle class="st3" cx="699.2" cy="492.1" r="2.4"/>
-        <circle class="st3" cx="748.1" cy="498" r="2.4"/>
-        <circle class="st3" cx="797" cy="503.8" r="2.4"/>
-        <circle class="st3" cx="845.9" cy="509.7" r="2.4"/>
-        <circle class="st3" cx="894.8" cy="515.5" r="2.4"/>
-        <circle class="st3" cx="479.2" cy="544.8" r="3.3"/>
-        <circle class="st3" cx="625.8" cy="562.4" r="3.3"/>
-        <circle class="st3" cx="454.7" cy="615.1" r="4.1"/>
-        <circle class="st3" cx="430.3" cy="691.2" r="4.9"/>`;
-     */
 
     public class Data
     {

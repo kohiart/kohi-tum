@@ -58,18 +58,6 @@ public static class Texture3
         Graphics2D.RenderWithTransform(g, data.Circle3.Vertices().ToList(), tinted3, matrix);
         Graphics2D.RenderWithTransform(g, data.Circle4.Vertices().ToList(), tinted4, matrix);
     }
-    /*
-        .st1{fill:#FFFFFF;}
-        <circle class="st1" cx="300" cy="300" r="150"/>
-
-        .st2{fill-opacity:0.01;}
-        <circle class="st2" cx="300" cy="125" r="20"/>
-
-       <circle cx="300" cy="125" r="5"/>
-
-       .st1{fill:#FFFFFF;}
-       <circle class="st1" cx="300" cy="80" r="10"/>
-    */
 
     public class Data
     {
