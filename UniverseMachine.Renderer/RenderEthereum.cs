@@ -78,7 +78,7 @@ namespace UniverseMachine.Renderer
                 else
                     await Console.Out.WriteLineAsync("buffer has data!");
 
-                var g = new Graphics2D(1024, 1280) { Buffer = output.ToArray() };
+                var g = new Graphics2D(1674, 2400) { Buffer = output.ToArray() };
                 filename = Path.Combine(folder, $"TUM_Solidity_{token}_{seed}.png");
                 ImageData.Save(filename, g);
             }

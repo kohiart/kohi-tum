@@ -9,9 +9,7 @@ namespace UniverseMachine;
 
 public sealed class Artwork
 {
-    public const float MasterScale = 0.6967592592592593f;
-    public const long MasterScaleF = 2992558231; /* 0.6967592592592593 */
-    public const float BaseSize = 2222f;
+    public const long MasterScale = 2992558231; /* 0.6967592592592593 */
     private readonly int _seed;
 
     public readonly Parameters Parameters;
@@ -157,7 +155,7 @@ public sealed class Artwork
                     radius,
                     radius).Vertices().ToList(),
                 color.ToUInt32(),
-                Matrix.NewScale((long) (MasterScale * Fix64.One)) * origin * canvasCorner
+                Matrix.NewScale(MasterScale) * origin * canvasCorner
             );
         }
     }
@@ -220,7 +218,7 @@ public sealed class Artwork
                         radius,
                         radius).Vertices().ToList(),
                     color.ToUInt32(),
-                    Matrix.NewScale(MasterScaleF) *
+                    Matrix.NewScale(MasterScale) *
                     origin * canvasCorner
                 );
             }
@@ -256,11 +254,10 @@ public sealed class Artwork
                 parameters.MyColorsG[(int) (colorChoice / Fix64.One)],
                 parameters.MyColorsB[(int) (colorChoice / Fix64.One)]);
 
-            var size = Fix64.Sub(Parameters.BaseSize * Fix64.One,
-                Fix64.Mul(Parameters.BaseSize * Fix64.One, Fix64.Mul(reduceAmount, outer * Fix64.One))) * scale;
-            var s = Fix64.Mul(MasterScaleF, Fix64.Div(size, (long) (BaseSize * Fix64.One)));
-            var dx = Fix64.Mul(x, MasterScaleF);
-            var dy = Fix64.Mul(-y, MasterScaleF);
+            var size = Fix64.Sub(Parameters.BaseSize * Fix64.One, Fix64.Mul(Parameters.BaseSize * Fix64.One, Fix64.Mul(reduceAmount, outer * Fix64.One))) * scale;
+            var s = Fix64.Mul(MasterScale, Fix64.Div(size, (long) (Parameters.BaseSize * Fix64.One)));
+            var dx = Fix64.Mul(x, MasterScale);
+            var dy = Fix64.Mul(-y, MasterScale);
 
             debugCount++;
             var textureIndex = parameters.WhichTex[inner];
@@ -340,9 +337,9 @@ public sealed class Artwork
 
             var size = (long) (p.StarPositions[i].S / 1000f * Fix64.One) * scale;
 
-            var dx = Fix64.Mul(x * Fix64.One, MasterScaleF);
-            var dy = Fix64.Mul(-y * Fix64.One, MasterScaleF);
-            var s = Fix64.Div(Fix64.Mul(MasterScaleF, size), Fix64.Two);
+            var dx = Fix64.Mul(x * Fix64.One, MasterScale);
+            var dy = Fix64.Mul(-y * Fix64.One, MasterScale);
+            var s = Fix64.Div(Fix64.Mul(MasterScale, size), Fix64.Two);
 
             var origin = Matrix.NewTranslation(
                 (long) (Parameters.StageW * scale / 2f * Fix64.One),
