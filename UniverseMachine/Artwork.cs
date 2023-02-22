@@ -19,7 +19,7 @@ public sealed class Artwork
     /// </summary>
     public const long MasterScaleBezier = 2992558231; /* 0.6967592592592593 */
 
-    public const float BaseSize = 2222f;
+    public const long BaseSize = 9543417331712 /* 2222 */;
     private readonly int _seed;
 
     public readonly Parameters Parameters;
@@ -227,7 +227,7 @@ public sealed class Artwork
                 parameters.MyColorsB[(int) (colorChoice / Fix64.One)]);
 
             var size = Fix64.Sub(Parameters.BaseSize * Fix64.One, Fix64.Mul(Parameters.BaseSize * Fix64.One, Fix64.Mul(reduceAmount, outer * Fix64.One))) * scale;
-            var s = Fix64.Mul(MasterScaleBezier, Fix64.Div(size, (long) (BaseSize * Fix64.One)));
+            var s = Fix64.Mul(MasterScaleBezier, Fix64.Div(size, BaseSize));
             var dx = Fix64.Mul(x, MasterScaleBezier);
             var dy = Fix64.Mul(-y, MasterScaleBezier);
 
