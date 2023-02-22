@@ -16,7 +16,7 @@ namespace UniverseMachine.Renderer
             await Console.Out.WriteLineAsync($"Rendering token #{token} with seed {seed}...");
             var expected = await RenderCSharpAsync(folder, token, seed);
             var actual = await RenderEthereumAsync(folder, token, seed);
-            await ValidateAsync(expected, actual, token, seed);
+            await ValidateAsync(folder, expected, actual, token, seed);
             await Console.Out.WriteLineAsync("Render complete");
         }
 
@@ -46,7 +46,7 @@ namespace UniverseMachine.Renderer
             return outputPath;
         }
 
-        public static async Task ValidateAsync(string expected, string actual, int token, int seed)
+        public static async Task ValidateAsync(string folder, string expected, string actual, int token, int seed)
         {
             await Console.Out.WriteLineAsync("Comparing images...");
 
@@ -68,7 +68,7 @@ namespace UniverseMachine.Renderer
                     await Console.Error.WriteLineAsync($"Found difference at ({x}, {y})");
                 }
 
-            var diffPath = $"TUM_Diff_{token}_{seed}.png";
+            var diffPath = Path.Combine(folder, $"TUM_Diff_{token}_{seed}.png");
             if (diffs > 0)
             {
                 await diffImage.SaveAsync(diffPath);
