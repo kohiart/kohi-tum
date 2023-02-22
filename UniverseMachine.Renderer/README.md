@@ -83,6 +83,8 @@
 Rendering Steps
 ===============
 
+In a terminal in this directory:
+
 1. Ensure you have deployed the Solidity contracts to mochi, by following this README:
 
 `./solidity/README.md`

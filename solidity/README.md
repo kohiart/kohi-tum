@@ -83,6 +83,8 @@
 Deploy Steps 
 ============
 
+In a terminal in this directory:
+
 1. Install dependencies:
 
 `npm install`

@@ -215,6 +215,7 @@ library UniverseMachineUniverse {
         RenderUniverseTextures calldata t,
         Matrix calldata scaled
     ) external pure returns (uint8[] memory) {
+
         uint count;
         for (uint32 i; i < 2000; i++) {
             for (uint32 j; j < 28; j++) {
@@ -231,22 +232,19 @@ library UniverseMachineUniverse {
                 f.t = u[count].rectify;                
                 f.tint = u[count].tint;
 
-                TextureData memory d;                
-
                 if (whichTex[j] == 0) {                    
-                    d = t.t0;
+                    TextureMethods.draw(g, t.t0, f);       
                 } else if (whichTex[j] == 1) {                                     
-                    d = t.t1;
+                    TextureMethods.draw(g, t.t1, f);                   
                 } else if (whichTex[j] == 2) {
-                    d = t.t2;
+                    TextureMethods.draw(g, t.t2, f);
                 } else if (whichTex[j] == 3) {
-                    d = t.t3;
+                    TextureMethods.draw(g, t.t3, f);
                 } else if (whichTex[j] == 4) {
-                    d = t.t4;
+                    TextureMethods.draw(g, t.t4, f);
                 } else {
-                    // revert ArgumentOutOfRange();                     
+                    revert ArgumentOutOfRange(); 
                 }
-                TextureMethods.draw(g, d, f);
                 count++;        
             }
         }

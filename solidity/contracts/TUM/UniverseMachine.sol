@@ -14,7 +14,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/interfaces/IERC721.sol";
 import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
-import "./IPublicMintable.sol";
+import "../Kohi/IPublicMintable.sol";
 
 import "../Base64.sol";
 import "./Parameters.sol";
