@@ -18,12 +18,11 @@ public static class Textures
         dy = Fix64.Sub(dy, Fix64.One);
 
         var transform = Matrix.NewIdentity();
-        transform *= Matrix.NewTranslation(-4771708665856 /* -1111 */, -4771708665856 /* -1111 */);
-        transform *= Matrix.NewScale(s, s);
+        transform = Matrix.Mul(transform, Matrix.NewTranslation(-4771708665856 /* -1111 */, -4771708665856 /* -1111 */));
+        transform = Matrix.Mul(transform, Matrix.NewScale(s, s));
 
-        if (r != 0) transform *= Matrix.NewRotation(r);
-
-        transform *= Matrix.NewTranslation(dx, dy);
+        if (r != 0) transform = Matrix.Mul(transform, Matrix.NewRotation(r));
+        transform = Matrix.Mul(transform, Matrix.NewTranslation(dx, dy));
         return transform;
     }
 }

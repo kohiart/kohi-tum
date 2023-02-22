@@ -9,7 +9,7 @@ namespace UniverseMachine;
 
 public sealed class Artwork
 {
-    public const long MasterScale = 2992558231; /* 0.6967592592592593 */
+    public const long MasterScale = 2992558336; /* 0.6967592592592593 */
     private readonly int _seed;
 
     public readonly Parameters Parameters;
@@ -21,20 +21,20 @@ public sealed class Artwork
         Parameters = new Parameters(xorShift, whichMasterSet, colorOverride);
     }
 
-    public void Draw(Graphics2D g, Matrix canvasCorner, int scale, Layer layer = Layer.All)
+    public void Draw(Graphics2D g, int scale, Layer layer = Layer.All)
     {
         var sw = Stopwatch.StartNew();
 
         if (layer.HasFlagFast(Layer.Background))
             RenderBackground(g, Parameters);
         if (layer.HasFlagFast(Layer.Grid))
-            RenderGridDots(g, Parameters, canvasCorner, scale);
+            RenderGridDots(g, Parameters, scale);
         if (layer.HasFlagFast(Layer.Skeleton))
-            RenderSkeleton(g, Parameters, canvasCorner, scale);
+            RenderSkeleton(g, Parameters, scale);
         if (layer.HasFlagFast(Layer.Universe))
-            RenderUniverse(g, Parameters, canvasCorner, _seed, scale);
+            RenderUniverse(g, Parameters, _seed, scale);
         if (layer.HasFlagFast(Layer.Stars))
-            RenderStars(g, Parameters, canvasCorner, scale);
+            RenderStars(g, Parameters, scale);
         if (layer.HasFlagFast(Layer.Mats))
             RenderMats(g, scale);
 
@@ -105,7 +105,7 @@ public sealed class Artwork
         return color;
     }
 
-    private static void RenderGridDots(Graphics2D g, Parameters parameters, Matrix canvasCorner, int scale)
+    private static void RenderGridDots(Graphics2D g, Parameters parameters, int scale)
     {
         Trace.TraceInformation("Composing grid");
 
@@ -118,19 +118,14 @@ public sealed class Artwork
             var black = Color.Black;
             e.OriginX = parameters.GridPoints[i].X * scale;
             e.OriginY = parameters.GridPoints[i].Y * scale;
-
-            var origin = Matrix.NewTranslation(
-                (long) (Parameters.StageW * scale / 2f * Fix64.One),
-                (long) (Parameters.StageH * scale / 2f * Fix64.One)
-            );
-
+            
             Graphics2D.RenderWithTransform(g, e.Vertices().ToList(),
                 black.ToUInt32(),
-                Matrix.NewScale(2992558336) * origin * canvasCorner);
+                CreateMatrixScaled(scale));
         }
     }
 
-    private static void RenderSkeleton(Graphics2D g, Parameters parameters, Matrix canvasCorner, int scale)
+    private static void RenderSkeleton(Graphics2D g, Parameters parameters, int scale)
     {
         Trace.TraceInformation("Composing skeleton");
 
@@ -143,24 +138,19 @@ public sealed class Artwork
             var y = parameters.Paths[j].My(Fix64.Div(i * Fix64.One, parameters.PathSegments * Fix64.One)) * scale;
 
             var color = Color.FromArgb(55, 0, 0, 0);
-
-            var origin = Matrix.NewTranslation(
-                (long) (Parameters.StageW * scale / 2f * Fix64.One),
-                (long) (Parameters.StageH * scale / 2f * Fix64.One)
-            );
-
+                
             Graphics2D.RenderWithTransform(g, new Ellipse(
                     x,
                     y,
                     radius,
                     radius).Vertices().ToList(),
                 color.ToUInt32(),
-                Matrix.NewScale(MasterScale) * origin * canvasCorner
+                CreateMatrixScaled(scale)
             );
         }
     }
 
-    private static void RenderUniverse(Graphics2D g, Parameters parameters, Matrix canvasCorner, int seed, int scale)
+    private static void RenderUniverse(Graphics2D g, Parameters parameters, int seed, int scale)
     {
         Trace.TraceInformation("Composing universe");
 
@@ -171,11 +161,6 @@ public sealed class Artwork
         var debugCount = 0;
 
         const long reduceAmount = 2147483 /* (1 / pathSegments) = 0.0005 */;
-
-        var origin = Matrix.NewTranslation(
-            (long) (Parameters.StageW * scale / 2f * Fix64.One),
-            (long) (Parameters.StageH * scale / 2f * Fix64.One)
-        );
 
         for (var i = 0; i < parameters.PathSegments * parameters.NumPaths; i++)
         {
@@ -188,6 +173,7 @@ public sealed class Artwork
                     scale;
 
             long angle;
+
             if (parameters.WhichRot[inner] == 0)
             {
                 angle = parameters.WhichRotDir[inner] == 0
@@ -218,8 +204,7 @@ public sealed class Artwork
                         radius,
                         radius).Vertices().ToList(),
                     color.ToUInt32(),
-                    Matrix.NewScale(MasterScale) *
-                    origin * canvasCorner
+                    CreateMatrixScaled(scale)
                 );
             }
 
@@ -261,7 +246,7 @@ public sealed class Artwork
 
             debugCount++;
             var textureIndex = parameters.WhichTex[inner];
-            var transform = Matrix.Mul(origin, canvasCorner);
+            var transform = CreateMatrixUnscaled();
 
             switch (textureIndex)
             {
@@ -319,7 +304,7 @@ public sealed class Artwork
         }
     }
 
-    private static void RenderStars(Graphics2D g, Parameters p, Matrix canvasCorner, int scale)
+    private static void RenderStars(Graphics2D g, Parameters p, int scale)
     {
         Trace.TraceInformation("Composing stars...");
 
@@ -340,14 +325,46 @@ public sealed class Artwork
             var dx = Fix64.Mul(x * Fix64.One, MasterScale);
             var dy = Fix64.Mul(-y * Fix64.One, MasterScale);
             var s = Fix64.Div(Fix64.Mul(MasterScale, size), Fix64.Two);
-
-            var origin = Matrix.NewTranslation(
-                (long) (Parameters.StageW * scale / 2f * Fix64.One),
-                (long) (Parameters.StageH * scale / 2f * Fix64.One)
-            );
-
-            Texture5.Draw(g, dx, dy, s, origin * canvasCorner, (uint) tint);
+            
+            Texture5.Draw(g, dx, dy, s, CreateMatrixUnscaled(), (uint) tint);
         }
+    }
+
+    public static Matrix CreateMatrixScaled(int scale)
+    {
+        //var origin = Matrix.NewTranslation(
+        //    (long) (Parameters.StageW * scale / 2f * Fix64.One),
+        //    (long) (Parameters.StageH * scale / 2f * Fix64.One)
+        //);
+
+        // var canvasCorner = Matrix.NewTranslation(365072220160 * scale, 365072220160 * scale);
+
+        var s = Matrix.NewScale(MasterScale);
+        var o = Matrix.NewTranslation(3231962890240, 4784593567744);
+        var c = Matrix.NewTranslation(
+            365072220160,
+            365072220160
+        );
+
+        return Matrix.Mul(Matrix.Mul(s, o), c);
+    }
+
+    public static Matrix CreateMatrixUnscaled()
+    {
+        //var origin = Matrix.NewTranslation(
+        //    (long) (Parameters.StageW * scale / 2f * Fix64.One),
+        //    (long) (Parameters.StageH * scale / 2f * Fix64.One)
+        //);
+
+        // var canvasCorner = Matrix.NewTranslation(365072220160 * scale, 365072220160 * scale);
+
+        var o = Matrix.NewTranslation(3231962890240, 4784593567744);
+        var c = Matrix.NewTranslation(
+            365072220160,
+            365072220160
+        );
+
+        return Matrix.Mul(o, c);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
