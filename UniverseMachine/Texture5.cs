@@ -26,8 +26,8 @@ public static class Texture5
 
         var data = new Data
         {
-            Circle1 = circle1,
-            Circle2 = circle2,
+            Circle1 = circle1.Vertices().ToList(),
+            Circle2 = circle2.Vertices().ToList(),
             Color1 = color1,
             Color2 = color2
         };
@@ -43,14 +43,14 @@ public static class Texture5
         var tinted1 = ColorMath.Tint(data.Color1, color);
         var tinted2 = ColorMath.Tint(data.Color2, color);
 
-        Graphics2D.RenderWithTransform(g, data.Circle1.Vertices().ToList(), tinted1, matrix);
-        Graphics2D.RenderWithTransform(g, data.Circle2.Vertices().ToList(), tinted2, matrix);
+        Graphics2D.RenderWithTransform(g, data.Circle1, tinted1, matrix);
+        Graphics2D.RenderWithTransform(g, data.Circle2, tinted2, matrix);
     }
 
     public class Data
     {
-        public Ellipse Circle1 = null!;
-        public Ellipse Circle2 = null!;
+        public IList<VertexData> Circle1 = null!;
+        public IList<VertexData> Circle2 = null!;
         public uint Color1;
         public uint Color2;
     }

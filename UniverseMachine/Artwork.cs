@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using Kohi.Composer;
-using int64 = System.Int64;
-using int32 = System.Int32;
 
 namespace UniverseMachine;
 
@@ -17,9 +15,10 @@ public sealed class Artwork
     /// This is a quirk in the history of the project.
     /// The Solidity rendering used a different precision when plotting bezier curves, but scaled with the correct value.
     /// </summary>
-    public const long MasterScaleBezier = 2992558231; /* 0.6967592592592593 */
-
+    public const long MasterScaleBezier = 2992558231; /* 0.6967592592592593 */    
+    public const long ReduceAmount = 2147483 /* 0.0005 */;
     public const long BaseSize = 9543417331712 /* 2222 */;
+    
     private readonly int _seed;
 
     public readonly Parameters Parameters;
@@ -127,20 +126,18 @@ public sealed class Artwork
             var x = parameters.Paths[j].Mx(Fix64.Div(i * Fix64.One, parameters.PathSegments * Fix64.One)) * scale;
             var y = parameters.Paths[j].My(Fix64.Div(i * Fix64.One, parameters.PathSegments * Fix64.One)) * scale;
 
-            var color = Color.FromArgb(55, 0, 0, 0);
-
             Graphics2D.RenderWithTransform(g, new Ellipse(
                     x,
                     y,
                     radius,
                     radius).Vertices().ToList(),
-                color.ToUInt32(),
+                922746880,
                 CreateScaledTranslation(scale)
             );
         }
     }
 
-    private static void RenderUniverse(Graphics2D g, Parameters parameters, int seed, int scale)
+    private static void RenderUniverse(Graphics2D g, Parameters p, int seed, int scale)
     {
         Console.WriteLine("Rendering universe...");
 
@@ -148,91 +145,45 @@ public sealed class Artwork
         var sw = Stopwatch.StartNew();
         var debugCount = 0;
 
-        const long reduceAmount = 2147483 /* 0.0005 */;
-
-        for (var i = 0; i < parameters.PathSegments * parameters.NumPaths; i++)
+        for (var i = 0; i < p.PathSegments * p.NumPaths; i++)
         {
-            var outer = i / parameters.NumPaths; // 0 .. 2000
-            var inner = i % parameters.NumPaths; // 0 .. 28
+            var outer = i / p.NumPaths; // 0 .. 2000
+            var inner = i % p.NumPaths; // 0 .. 28
 
-            var x = parameters.Paths[inner].Mx(Fix64.Div(outer * Fix64.One, parameters.PathSegments * Fix64.One)) * scale;
-            var y = parameters.Paths[inner].My(Fix64.Div(outer * Fix64.One, parameters.PathSegments * Fix64.One)) * scale;
-
-            long angle;
-            switch (parameters.WhichRot[inner])
-            {
-                case 0:
-                    angle = parameters.WhichRotDir[inner] == 0 ? Radians(Fix64.Mul(outer * Fix64.One, 2147483648 /* 0.5 */)) : Radians(-Fix64.Mul(outer * Fix64.One, 2147483648 /* 0.5 */));
-                    break;
-                case 1:
-                    angle = parameters.WhichRotDir[inner] == 0
-                        ? Radians(Fix64.Sub(360 * Fix64.One,
-                            Fix64.Mul(360 * Fix64.One, Fix64.Mul(reduceAmount, outer * Fix64.One))))
-                        : Radians(-Fix64.Sub(360 * Fix64.One,
-                            Fix64.Mul(360 * Fix64.One, Fix64.Mul(reduceAmount, outer * Fix64.One))));
-                    break;
-                default:
-                    angle = 0;
-                    break;
-            }
+            var step = Fix64.Div(outer * Fix64.One, 2000 * Fix64.One);
+            var x = p.Paths[inner].Mx(step) * scale;
+            var y = p.Paths[inner].My(step) * scale;
+            var angle = GetAngle(p, outer, inner);
 
             {
                 var radius = 6442450944 /* 1.5 */ * scale;
-                var color = Color.FromArgb(55, 0, 0, 0);
-
+                                
                 Graphics2D.RenderWithTransform(g, new Ellipse(
                         x,
                         -y,
                         radius,
                         radius).Vertices().ToList(),
-                    color.ToUInt32(),
+                    922746880,
                     CreateScaledTranslation(scale)
                 );
             }
 
-            var t1 = Fix64.Mul(Fix64.Mul(parameters.CLen * Fix64.One, reduceAmount), outer * Fix64.One);
-            var t2 = Fix64.Sub(parameters.CLen * Fix64.One, t1);
-            var colorChoice = Fix64.Floor(t2 % (parameters.CLen * Fix64.One));
+            var colorChoice = GetColorChoice(p, outer, inner);
 
-            if (parameters.WhichColorFlow[inner] != 0)
-            {
-                if (parameters.WhichColorFlow[inner] == 1)
-                    colorChoice = Fix64.Floor(
-                        Fix64.Add(Fix64.Mul(outer * Fix64.One, Fix64.Two), inner * Fix64.One)
-                        % (parameters.CLen * Fix64.One)
-                    );
-                else if (parameters.WhichColorFlow[inner] == 2)
-                    colorChoice = Fix64.Floor(Fix64.Add(Fix64.Mul(inner * Fix64.One,
-                                                      Fix64.Div(parameters.CLen * Fix64.One,
-                                                          Parameters.GridSize * Fix64.One))
-                                                  ,
-                                                  Fix64.Mul(Fix64.Add(outer * Fix64.One, inner * Fix64.One),
-                                                      1288490240 /* 0.3 */))
-                                              % (parameters.CLen * Fix64.One)
-                    );
-                else if (parameters.WhichColorFlow[inner] == 3)
-                    colorChoice =
-                        Fix64.Floor(Fix64.Add(Fix64.Mul(inner * Fix64.One,
-                                            Fix64.Div(parameters.CLen * Fix64.One,
-                                                Fix64.Mul(Parameters.GridSize * Fix64.One, 429496736 /* 0.1 */)))
-                                        ,
-                                        Fix64.Mul(Fix64.Add(outer * Fix64.One, inner * Fix64.One), 429496736 /* 0.1 */))
-                                    % (parameters.CLen * Fix64.One));
-            }
+            var tint = ColorMath.ToColor(
+                    255,
+                    p.MyColorsR[(int)(colorChoice / Fix64.One)],
+                    p.MyColorsG[(int)(colorChoice / Fix64.One)],
+                    p.MyColorsB[(int)(colorChoice / Fix64.One)]
+                );
 
-            var tint = Color.FromArgb(
-                255,
-                parameters.MyColorsR[(int) (colorChoice / Fix64.One)],
-                parameters.MyColorsG[(int) (colorChoice / Fix64.One)],
-                parameters.MyColorsB[(int) (colorChoice / Fix64.One)]);
-
-            var size = Fix64.Sub(Parameters.BaseSize * Fix64.One, Fix64.Mul(Parameters.BaseSize * Fix64.One, Fix64.Mul(reduceAmount, outer * Fix64.One))) * scale;
+            var size = Fix64.Sub(BaseSize, Fix64.Mul(BaseSize, Fix64.Mul(ReduceAmount, outer * Fix64.One))) * scale;
             var s = Fix64.Mul(MasterScaleBezier, Fix64.Div(size, BaseSize));
             var dx = Fix64.Mul(x, MasterScaleBezier);
             var dy = Fix64.Mul(-y, MasterScaleBezier);
 
             debugCount++;
-            var textureIndex = parameters.WhichTex[inner];
+            var textureIndex = p.WhichTex[inner];
 
             var transform = CreateTranslation(scale);
 
@@ -288,10 +239,133 @@ public sealed class Artwork
         foreach (var (key, value) in counts) Console.WriteLine($"texture #{key}: {value}");
     }
 
+    private static long GetAngle(Parameters p, int i, int j)
+    {
+        long angle;
+        
+        if (p.WhichRot[j] == 0) {
+            if (p.WhichRotDir[j] == 0) {
+                angle = Radians(
+                    Fix64.Mul(
+                        i * Fix64.One,
+                        2147483648 /* 0.5 */
+                    )
+                );
+            } else {
+                angle = Radians(
+                    -Fix64.Mul(
+                        i * Fix64.One,
+                        2147483648 /* 0.5 */
+                    )
+                );
+            }
+        } else if (p.WhichRot[j] == 1) {
+            if (p.WhichRotDir[j] == 0) {
+                angle = Radians(
+                    Fix64.Sub(
+                        360 * Fix64.One,
+                        Fix64.Mul(
+                            360 * Fix64.One,
+                            Fix64.Mul(
+                                ReduceAmount,
+                                i * Fix64.One
+                            )
+                        )
+                    )
+                );
+            } else {
+                angle = Radians(
+                    -Fix64.Sub(
+                        360 * Fix64.One,
+                        Fix64.Mul(
+                            360 * Fix64.One,
+                            Fix64.Mul(
+                                2147483, /* 0.0005 */
+                                i * Fix64.One
+                            )
+                        )
+                    )
+                );
+            }
+        } else {
+            angle = 0;
+        }
+
+        return angle;
+    }
+
+    private static long GetColorChoice(Parameters p, int i, int j)
+    {
+        var colorChoice = Fix64.Floor(
+            Fix64.Sub(
+                p.CLen * Fix64.One,
+                Fix64.Mul(
+                    Fix64.Mul(
+                        p.CLen * Fix64.One,
+                        ReduceAmount
+                    ),
+                    i * Fix64.One
+                )
+            ) % (p.CLen * Fix64.One)
+        );
+        if (p.WhichColorFlow[j] != 0) {
+            if (p.WhichColorFlow[j] == 1) {
+                colorChoice = Fix64.Floor(
+                    Fix64.Add(
+                        Fix64.Mul((i) * Fix64.One, Fix64.Two),
+                        (j) * Fix64.One
+                    ) % (p.CLen * Fix64.One)
+                );
+            } else if (p.WhichColorFlow[j] == 2) {
+                colorChoice = Fix64.Floor(
+                    Fix64.Add(
+                        Fix64.Mul(
+                            (j) * Fix64.One,
+                            Fix64.Div(
+                                p.CLen * Fix64.One,
+                                (28) * Fix64.One
+                            )
+                        ),
+                        Fix64.Mul(
+                            Fix64.Add(
+                                (i) * Fix64.One,
+                                (j) * Fix64.One
+                            ),
+                            1288490240 /* 0.3 */
+                        )
+                    ) % (p.CLen * Fix64.One)
+                );
+            } else if (p.WhichColorFlow[j] == 3) {
+                colorChoice = Fix64.Floor(
+                    Fix64.Add(
+                        Fix64.Mul(
+                            (j) * Fix64.One,
+                            Fix64.Div(
+                                p.CLen * Fix64.One,
+                                Fix64.Mul(
+                                    28 * Fix64.One,
+                                    429496736 /* 0.1 */
+                                )
+                            )
+                        ),
+                        Fix64.Mul(
+                            Fix64.Add(
+                                (i) * Fix64.One,
+                                (j) * Fix64.One
+                            ),
+                            429496736 /* 0.1 */
+                        )
+                    ) % (p.CLen * Fix64.One)
+                );
+            }
+        }
+        return colorChoice;
+    }
+
     private static Matrix CreateTranslation(int scale) => Matrix.Mul(GetOriginScaled(scale), GetCanvasCorner(scale));
     private static Matrix CreateScaledTranslation(int scale) => Matrix.Mul(Matrix.Mul(Matrix.NewScale(MasterScale), GetOriginScaled(scale)), GetCanvasCorner(scale));
-    private static Matrix GetCanvasCorner(int scale) => Matrix.NewTranslation(365072220160 * scale, 365072220160 * scale);
-    private static Matrix GetOriginScaled(int scale) => Matrix.NewTranslation((long) (Parameters.StageW * scale / 2f * Fix64.One), (long) (Parameters.StageH * scale / 2f * Fix64.One));
+    private static Matrix GetCanvasCorner(int scale) => Matrix.NewTranslation(Fix64.Mul(365072220160, scale * Fix64.One), Fix64.Mul(365072220160, scale * Fix64.One));
+    private static Matrix GetOriginScaled(int scale) => Matrix.NewTranslation(Fix64.Mul(3231962890240, scale * Fix64.One), Fix64.Mul(4784593567744, scale * Fix64.One));
 
     private static void RenderStars(Graphics2D g, Parameters p, int scale)
     {

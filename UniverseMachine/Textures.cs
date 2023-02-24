@@ -11,8 +11,9 @@ public static class Textures
         var dx = x;
         var dy = y;
 
-        if (!t.IsIdentity())
+        if (!t.IsIdentity()) {
             t.Transform(ref dx, ref dy);
+        }
 
         dx = Fix64.Add(dx, Fix64.One);
         dy = Fix64.Sub(dy, Fix64.One);
@@ -21,7 +22,10 @@ public static class Textures
         transform = Matrix.Mul(transform, Matrix.NewTranslation(-4771708665856 /* -1111 */, -4771708665856 /* -1111 */));
         transform = Matrix.Mul(transform, Matrix.NewScale(s, s));
 
-        if (r != 0) transform = Matrix.Mul(transform, Matrix.NewRotation(r));
+        if (r != 0) {
+            transform = Matrix.Mul(transform, Matrix.NewRotation(r));
+        }
+
         transform = Matrix.Mul(transform, Matrix.NewTranslation(dx, dy));
         return transform;
     }

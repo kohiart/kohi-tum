@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Joshua Davis / praystation. All rights reserved. You do not have permission to reproduce, modify, or redistribute this code or its outputs without express permission from the artist.
 
-using System.Drawing;
 using Kohi.Composer;
 
 namespace UniverseMachine;
@@ -36,44 +35,36 @@ public static class Texture1
         var rect1 = Rect(688, 644, 890, 890);
         var rect2 = Rect(666, 666, 890, 890);
 
-        var color1 = Color.FromArgb(6, Color.Black.R, Color.Black.G, Color.Black.B);
-        var color2 = Color.FromArgb(255, Color.White.R, Color.White.G, Color.White.B);
-        var color3 = Color.FromArgb(0, 0, 0, 0);
-
         var data = new Data
         {
-            Rect1 = rect1,
-            Color1 = color1,
-            Rect2 = rect2,
-            Color2 = color2,
-            Color3 = color3
+            Rect1 = rect1.Vertices().ToList(),
+            Color1 = 100663296,
+            Rect2 = rect2.Vertices().ToList(),
+            Color2 = 4294967295
         };
 
         return data;
     }
 
-    public static Matrix Draw(Graphics2D g, long x, long y, long r, long s, Matrix t, Color color, int count)
+    public static Matrix Draw(Graphics2D g, long x, long y, long r, long s, Matrix t, uint color, int count)
     {
         var data = Instance;
         var matrix = Textures.Rectify(x, y, r, s, t);
 
-        var tinted1 = ColorMath.Tint(data.Color1.ToUInt32(), color.ToUInt32());
-        var v1 = data.Rect1.Vertices().ToList();
-        Graphics2D.RenderWithTransform(g, v1, tinted1, matrix);
+        var tinted1 = ColorMath.Tint(data.Color1, color);
+        Graphics2D.RenderWithTransform(g, data.Rect1, tinted1, matrix);
 
-        var tinted2 = ColorMath.Tint(data.Color2.ToUInt32(), color.ToUInt32());
-        var v2 = data.Rect2.Vertices().ToList();
-        Graphics2D.RenderWithTransform(g, v2, tinted2, matrix);
+        var tinted2 = ColorMath.Tint(data.Color2, color);
+        Graphics2D.RenderWithTransform(g, data.Rect2, tinted2, matrix);
 
         return matrix;
     }
     
     public class Data
     {
-        public Color Color1;
-        public Color Color2;
-        public Color Color3;
-        public CustomPath Rect1 = null!;
-        public CustomPath Rect2 = null!;
+        public uint Color1;
+        public uint Color2;
+        public IList<VertexData> Rect1 = null!;
+        public IList<VertexData> Rect2 = null!;
     }
 }

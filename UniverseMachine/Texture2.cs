@@ -16,30 +16,23 @@ public static class Texture2
     {
         Instance = CreateTexture();
     }
-
-
+    
     public static Data CreateTexture()
     {
-        var color = Color.White;
-        var color1 = Color.FromArgb(255, color.R, color.G, color.B);
-        var color2 = Color.FromArgb(0, color1.R, color1.G, color1.B);
+        const uint color1 = 4294967295;
+        const uint color2 = 16777215;
 
-        var c0 = color.ToUInt32();
-        var c1 = color1.ToUInt32();
-        var c2 = color2.ToUInt32();
+        const long h = 4767413698560;
+        const long x = 4771708665856;
+        const long y = 0;
 
-        // int64 w = 4767413698560;
-        var h = 4767413698560;
-        var x = 4771708665856;
-        long y = 0;
-
-        var strokes = new List<Stroke>();
-        var colors = new List<Color>();
+        var strokes = new List<IList<VertexData>>();
+        var colors = new List<uint>();
 
         for (var i = y; i <= Fix64.Add(y, h); i += 2147483648)
         {
             var inter = Fix64.Map(i, y, Fix64.Add(y, h), 0, Fix64.One);
-            var c = ColorMath.Lerp(color1.ToUInt32(), color2.ToUInt32(), inter).ToColor();
+            var c = ColorMath.Lerp(color1, color2, inter);
             var s = h - i;
 
             var line = new CustomPath();
@@ -47,18 +40,20 @@ public static class Texture2
             line.LineTo(Fix64.Add(x, i), Fix64.Add(s, i));
 
             var stroke = new Stroke(line.Vertices());
-            strokes.Add(stroke);
+            strokes.Add(Stroke.Vertices(stroke).ToList());
             colors.Add(c);
         }
 
-        var data = new Data();
-        data.Strokes = strokes;
-        data.Colors = colors;
+        var data = new Data
+        {
+            Strokes = strokes,
+            Colors = colors
+        };
 
         return data;
     }
 
-    public static void Draw(Graphics2D g, long x, long y, long r, long s, Matrix t, Color color)
+    public static void Draw(Graphics2D g, long x, long y, long r, long s, Matrix t, uint color)
     {
         var data = Instance;
         var matrix = Textures.Rectify(x, y, r, s, t);
@@ -66,14 +61,14 @@ public static class Texture2
         for (var i = 0; i < data.Strokes.Count; i++)
         {
             var stroke = data.Strokes[i];
-            var tinted = ColorMath.Tint(data.Colors[i].ToUInt32(), color.ToUInt32());
-            Graphics2D.RenderWithTransform(g, Stroke.Vertices(stroke).ToList(), tinted, matrix);
+            var tinted = ColorMath.Tint(data.Colors[i], color);
+            Graphics2D.RenderWithTransform(g, stroke, tinted, matrix);
         }
     }
 
     public class Data
     {
-        public List<Color> Colors = null!;
-        public List<Stroke> Strokes = null!;
+        public List<uint> Colors = null!;
+        public List<IList<VertexData>> Strokes = null!;
     }
 }
